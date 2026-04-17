@@ -13,12 +13,15 @@ const answerInput = document.getElementById("answer-input");
 const solveButton = document.getElementById("solve-button");
 const clearLettersButton = document.getElementById("clear-letters-button");
 const resetBoardButton = document.getElementById("reset-board-button");
+const themeToggleButton = document.getElementById("theme-toggle-button");
 const statusLine = document.getElementById("status-line");
 const resultsOutput = document.getElementById("results-output");
 
 const tiles = [];
 let selectedPosition = { row: 0, column: 0 };
 let words = [];
+const THEME_STORAGE_KEY = "wordlepaint-theme";
+const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
 function buildBoard() {
   for (let row = 0; row < BOARD_ROWS; row += 1) {
@@ -60,7 +63,49 @@ function buildBoard() {
 
 function setStatus(message, isError = false) {
   statusLine.textContent = message;
-  statusLine.style.color = isError ? "#aa3a25" : "#8f4d39";
+  statusLine.style.color = isError
+    ? "var(--status-error)"
+    : "var(--status-ink)";
+}
+
+function getStoredThemePreference() {
+  return window.localStorage.getItem(THEME_STORAGE_KEY);
+}
+
+function getEffectiveTheme(preference) {
+  if (preference === "light" || preference === "dark") {
+    return preference;
+  }
+  return systemThemeQuery.matches ? "dark" : "light";
+}
+
+function updateThemeToggleLabel(preference, effectiveTheme) {
+  const suffix = preference === "auto" ? `Auto (${effectiveTheme})` : preference[0].toUpperCase() + preference.slice(1);
+  themeToggleButton.textContent = `Theme: ${suffix}`;
+}
+
+function applyTheme(preference) {
+  const normalizedPreference = preference === "light" || preference === "dark" ? preference : "auto";
+  const effectiveTheme = getEffectiveTheme(normalizedPreference);
+  document.documentElement.dataset.theme = effectiveTheme;
+  updateThemeToggleLabel(normalizedPreference, effectiveTheme);
+}
+
+function cycleThemePreference() {
+  const currentPreference = getStoredThemePreference() ?? "auto";
+  const nextPreference = currentPreference === "auto" ? "dark" : currentPreference === "dark" ? "light" : "auto";
+  window.localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
+  applyTheme(nextPreference);
+}
+
+function initializeTheme() {
+  applyTheme(getStoredThemePreference() ?? "auto");
+  systemThemeQuery.addEventListener("change", () => {
+    const storedPreference = getStoredThemePreference() ?? "auto";
+    if (storedPreference === "auto") {
+      applyTheme("auto");
+    }
+  });
 }
 
 function writeResults(text) {
@@ -570,8 +615,10 @@ function handleKeydown(event) {
 }
 
 buildBoard();
+initializeTheme();
 solveButton.addEventListener("click", solveBoard);
 clearLettersButton.addEventListener("click", clearLetters);
 resetBoardButton.addEventListener("click", resetBoard);
+themeToggleButton.addEventListener("click", cycleThemePreference);
 document.addEventListener("keydown", handleKeydown);
 loadWordList();

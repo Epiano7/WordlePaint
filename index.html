@@ -9,7 +9,6 @@
 <body>
   <main class="app-shell">
     <section class="hero">
-      <p class="eyebrow">GitHub Pages Edition</p>
       <h1>WordlePaint</h1>
       <p class="tagline">Paint a six-row Wordle board, then solve it in the browser.</p>
     </section>
@@ -17,6 +16,10 @@
     <section class="workspace">
       <div class="board-panel">
         <div class="controls-card">
+          <div class="topbar-row">
+            <button id="theme-toggle-button" type="button" class="secondary toggle-button">Theme: Auto</button>
+          </div>
+
           <label class="answer-field">
             <span>Answer Word</span>
             <input id="answer-input" type="text" maxlength="5" autocomplete="off" spellcheck="false" placeholder="cubit">
@@ -48,8 +51,7 @@
 
       <aside class="results-panel">
         <div class="results-header">
-          <h2>Results</h2>
-          <p>Matches, failures, and fallback guesses appear here.</p>
+          <h2>Console</h2>
         </div>
         <pre id="results-output" class="results-output">Ready.</pre>
       </aside>
