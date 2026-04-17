@@ -1,0 +1,14 @@
+.idea/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+build/
+dist/
+
+# Old desktop app sources and packaging files not needed for the GitHub Pages site
+wordle_pattern_solver.py
+wordle_pattern_solver_gui.py
+wordle_pattern_solver_gui.spec
